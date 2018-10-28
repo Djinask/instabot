@@ -24,11 +24,13 @@ from .prepare import delete_credentials, get_credentials
 
 
 class API(object):
-    def __init__(self, device=None):
+    def __init__(self, device=None, username=None, password=None):
         # Setup device and user_agent
         device = device or devices.DEFAULT_DEVICE
         self.device_settings = devices.DEVICES[device]
         self.user_agent = config.USER_AGENT_BASE.format(**self.device_settings)
+        self.username = username
+        self.password = password
 
         self.is_logged_in = False
         self.last_response = None

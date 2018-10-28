@@ -44,10 +44,13 @@ from .bot_unfollow import (unfollow, unfollow_everyone, unfollow_non_followers,
 from .bot_unlike import (unlike, unlike_comment, unlike_media_comments,
                          unlike_medias, unlike_user)
 from .bot_video import upload_video
+from .bot_functions import like_and_follow_users_media_n_liker
 
 
 class Bot(object):
     def __init__(self,
+                 username=None,
+                 password=None,
                  whitelist_file='whitelist.txt',
                  blacklist_file='blacklist.txt',
                  comments_file='comments.txt',
@@ -58,7 +61,7 @@ class Bot(object):
                  proxy=None,
                  max_likes_per_day=1000,
                  max_unlikes_per_day=1000,
-                 max_follows_per_day=350,
+                 max_follows_per_day=650,
                  max_unfollows_per_day=350,
                  max_comments_per_day=100,
                  max_blocks_per_day=100,
@@ -69,8 +72,8 @@ class Bot(object):
                  filter_users=True,
                  filter_private_users=True,
                  filter_users_without_profile_photo=True,
-                 filter_previously_followed=False,
-                 filter_business_accounts=True,
+                 filter_previously_followed=True,
+                 filter_business_accounts=False,
                  filter_verified_accounts=True,
                  max_followers_to_follow=2000,
                  min_followers_to_follow=10,
@@ -93,7 +96,7 @@ class Bot(object):
                  verbosity=True,
                  device=None
                  ):
-        self.api = API(device=device)
+        self.api = API(device=device, username=username, password=password)
 
         self.total = {'likes': 0,
                       'unlikes': 0,
@@ -239,6 +242,10 @@ class Bot(object):
         self.print_counters()
 
     def login(self, **args):
+        if self.username:
+            args['username'] = self.username
+        if self.password:
+            args['password'] = self.password
         if self.proxy:
             args['proxy'] = self.proxy
         if self.api.login(**args) is False:
@@ -623,3 +630,9 @@ class Bot(object):
 
     def save_user_stats(self, username, path=""):
         return save_user_stats(self, username, path=path)
+
+    # composed
+
+    def like_and_follow_users_media_n_liker(self, users, pivot=2, last_n_media=2):
+        return like_and_follow_users_media_n_liker(self, users, pivot, last_n_media)
+
